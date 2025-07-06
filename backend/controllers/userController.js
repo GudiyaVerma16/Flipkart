@@ -12,7 +12,7 @@ exports.registerUser = asyncErrorHandler(async (req, res, next) => {
 
   let avatarData = {
     public_id: "default_avatar",
-    url: "https://res.cloudinary.com/dxqx4xumo/image/upload/v1703123456/avatars/default_avatar.png",
+    url: "https://via.placeholder.com/150x150/cccccc/666666?text=User",
   };
 
   if (avatar && avatar !== "") {
@@ -289,7 +289,7 @@ exports.createAdminUser = asyncErrorHandler(async (req, res, next) => {
       role: "admin",
       avatar: {
         public_id: "default_avatar",
-        url: "https://res.cloudinary.com/dxqx4xumo/image/upload/v1703123456/avatars/default_avatar.png",
+        url: "https://via.placeholder.com/150x150/cccccc/666666?text=User",
       },
     });
   }
