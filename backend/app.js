@@ -18,9 +18,8 @@ app.use(
     origin:
       process.env.NODE_ENV === "production"
         ? [
-            "https://flipkart-8h5c-qku0afd77-gudiyas-projects-34d2aacb.vercel.app",
+            /^https:\/\/.*\.vercel\.app$/, // Allow any Vercel subdomain
             "https://flipkart-gudiyaverma16.vercel.app",
-            "https://flipkart-gudiyaverma16.vercel.app/",
           ]
         : ["http://localhost:3000"],
     credentials: true,
