@@ -12,7 +12,7 @@ exports.registerUser = asyncErrorHandler(async (req, res, next) => {
 
   let avatarData = {
     public_id: "default_avatar",
-    url: "https://via.placeholder.com/150x150/cccccc/666666?text=User",
+    url: "https://ui-avatars.com/api/?name=User&background=cccccc&color=666666&size=150",
   };
 
   if (avatar && avatar !== "") {
@@ -83,12 +83,13 @@ exports.getUserDetails = asyncErrorHandler(async (req, res, next) => {
   if (
     user.avatar &&
     user.avatar.url &&
-    user.avatar.url.includes(
+    (user.avatar.url.includes(
       "res.cloudinary.com/dxqx4xumo/image/upload/v1703123456/avatars/default_avatar.png"
-    )
+    ) ||
+      user.avatar.url.includes("via.placeholder.com"))
   ) {
     user.avatar.url =
-      "https://via.placeholder.com/150x150/cccccc/666666?text=User";
+      "https://ui-avatars.com/api/?name=User&background=cccccc&color=666666&size=150";
     await user.save();
   }
 
@@ -227,12 +228,13 @@ exports.getAllUsers = asyncErrorHandler(async (req, res, next) => {
     if (
       user.avatar &&
       user.avatar.url &&
-      user.avatar.url.includes(
+      (user.avatar.url.includes(
         "res.cloudinary.com/dxqx4xumo/image/upload/v1703123456/avatars/default_avatar.png"
-      )
+      ) ||
+        user.avatar.url.includes("via.placeholder.com"))
     ) {
       user.avatar.url =
-        "https://via.placeholder.com/150x150/cccccc/666666?text=User";
+        "https://ui-avatars.com/api/?name=User&background=cccccc&color=666666&size=150";
       await user.save();
     }
   }
@@ -317,7 +319,7 @@ exports.createAdminUser = asyncErrorHandler(async (req, res, next) => {
       role: "admin",
       avatar: {
         public_id: "default_avatar",
-        url: "https://via.placeholder.com/150x150/cccccc/666666?text=User",
+        url: "https://ui-avatars.com/api/?name=User&background=cccccc&color=666666&size=150",
       },
     });
   }
