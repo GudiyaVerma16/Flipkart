@@ -66,65 +66,87 @@ exports.getAdminProducts = asyncErrorHandler(async (req, res, next) => {
 
 // Create Product ---ADMIN
 exports.createProduct = asyncErrorHandler(async (req, res, next) => {
-  let images = [];
-  if (typeof req.body.images === "string") {
-    images.push(req.body.images);
-  } else {
-    images = req.body.images;
-  }
+  try {
+    console.log("Creating product with body:", req.body);
 
-  const imagesLink = [];
+    let images = [];
+    if (typeof req.body.images === "string") {
+      images.push(req.body.images);
+    } else {
+      images = req.body.images;
+    }
 
-  for (let i = 0; i < images.length; i++) {
-    const result = await cloudinary.v2.uploader.upload(images[i], {
-      folder: "products",
+    console.log("Processing images:", images.length);
+
+    const imagesLink = [];
+
+    for (let i = 0; i < images.length; i++) {
+      try {
+        console.log("Uploading image", i + 1, "to Cloudinary");
+        const result = await cloudinary.v2.uploader.upload(images[i], {
+          folder: "products",
+        });
+
+        imagesLink.push({
+          public_id: result.public_id,
+          url: result.secure_url,
+        });
+      } catch (error) {
+        console.error("Error uploading image to Cloudinary:", error);
+        return next(
+          new ErrorHandler(
+            `Error uploading image ${i + 1}: ${error.message}`,
+            500
+          )
+        );
+      }
+    }
+
+    console.log("Uploading brand logo");
+    const result = await cloudinary.v2.uploader.upload(req.body.logo, {
+      folder: "brands",
     });
-
-    imagesLink.push({
+    const brandLogo = {
       public_id: result.public_id,
       url: result.secure_url,
-    });
-  }
+    };
 
-  const result = await cloudinary.v2.uploader.upload(req.body.logo, {
-    folder: "brands",
-  });
-  const brandLogo = {
-    public_id: result.public_id,
-    url: result.secure_url,
-  };
+    req.body.brand = {
+      name: req.body.brandname,
+      logo: brandLogo,
+    };
+    req.body.images = imagesLink;
+    req.body.user = req.user.id;
 
-  req.body.brand = {
-    name: req.body.brandname,
-    logo: brandLogo,
-  };
-  req.body.images = imagesLink;
-  req.body.user = req.user.id;
-
-  // Handle specifications parsing with error handling
-  let specs = [];
-  if (req.body.specifications && Array.isArray(req.body.specifications)) {
-    req.body.specifications.forEach((s) => {
-      try {
-        if (typeof s === "string") {
-          specs.push(JSON.parse(s));
-        } else {
-          specs.push(s);
+    // Handle specifications parsing with error handling
+    let specs = [];
+    if (req.body.specifications && Array.isArray(req.body.specifications)) {
+      req.body.specifications.forEach((s) => {
+        try {
+          if (typeof s === "string") {
+            specs.push(JSON.parse(s));
+          } else {
+            specs.push(s);
+          }
+        } catch (error) {
+          console.error("Error parsing specification:", s, error);
+          // Skip malformed specifications
         }
-      } catch (error) {
-        console.error("Error parsing specification:", s, error);
-        // Skip malformed specifications
-      }
+      });
+    }
+    req.body.specifications = specs;
+
+    console.log("Creating product in database");
+    const product = await Product.create(req.body);
+
+    res.status(201).json({
+      success: true,
+      product,
     });
+  } catch (error) {
+    console.error("Error in createProduct:", error);
+    return next(new ErrorHandler(error.message, 500));
   }
-  req.body.specifications = specs;
-
-  const product = await Product.create(req.body);
-
-  res.status(201).json({
-    success: true,
-    product,
-  });
 });
 
 // Update Product ---ADMIN
