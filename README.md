@@ -8,7 +8,7 @@ A complete, production-ready Flipkart clone built with the MERN stack (MongoDB, 
 
 ## 🚀 Live Demo
 
-**Frontend:** [https://flipkartweb-mern.vercel.app](https://flipkartweb-mern.vercel.app)
+**Frontend:** [https://flipkart-8h5c.vercel.app/](https://flipkart-8h5c.vercel.app/)
 
 ## 📋 Table of Contents
 
