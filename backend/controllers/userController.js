@@ -79,6 +79,19 @@ exports.logoutUser = asyncErrorHandler(async (req, res, next) => {
 exports.getUserDetails = asyncErrorHandler(async (req, res, next) => {
   const user = await User.findById(req.user.id);
 
+  // Fix old default avatar URLs
+  if (
+    user.avatar &&
+    user.avatar.url &&
+    user.avatar.url.includes(
+      "res.cloudinary.com/dxqx4xumo/image/upload/v1703123456/avatars/default_avatar.png"
+    )
+  ) {
+    user.avatar.url =
+      "https://via.placeholder.com/150x150/cccccc/666666?text=User";
+    await user.save();
+  }
+
   res.status(200).json({
     success: true,
     user,
@@ -208,6 +221,21 @@ exports.updateProfile = asyncErrorHandler(async (req, res, next) => {
 // Get All Users --ADMIN
 exports.getAllUsers = asyncErrorHandler(async (req, res, next) => {
   const users = await User.find();
+
+  // Fix old default avatar URLs for all users
+  for (let user of users) {
+    if (
+      user.avatar &&
+      user.avatar.url &&
+      user.avatar.url.includes(
+        "res.cloudinary.com/dxqx4xumo/image/upload/v1703123456/avatars/default_avatar.png"
+      )
+    ) {
+      user.avatar.url =
+        "https://via.placeholder.com/150x150/cccccc/666666?text=User";
+      await user.save();
+    }
+  }
 
   res.status(200).json({
     success: true,

@@ -117,6 +117,8 @@ export const loadUser = () => async (dispatch) => {
         type: LOAD_USER_FAIL,
         payload: null,
       });
+      // Don't log this as an error since it's expected behavior
+      return;
     } else {
       dispatch({
         type: LOAD_USER_FAIL,

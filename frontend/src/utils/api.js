@@ -37,6 +37,11 @@ api.interceptors.response.use(
       localStorage.removeItem("token");
       window.location.href = "/login";
     }
+    // Don't log 401 errors for /me endpoint as they're expected
+    if (error.response?.status === 401 && error.config.url.includes("/me")) {
+      // Silently handle this - user just isn't logged in
+      return Promise.reject(error);
+    }
     return Promise.reject(error);
   }
 );
