@@ -28,7 +28,12 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     // Only redirect to login for 401 errors that aren't from /me endpoint
-    if (error.response?.status === 401 && !error.config.url.includes("/me")) {
+    // and only if it's not an admin endpoint (to avoid infinite loops)
+    if (
+      error.response?.status === 401 &&
+      !error.config.url.includes("/me") &&
+      !error.config.url.includes("/admin")
+    ) {
       localStorage.removeItem("token");
       window.location.href = "/login";
     }

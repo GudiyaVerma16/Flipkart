@@ -52,6 +52,11 @@ export const loginUser = (email, password) => async (dispatch) => {
 
     const { data } = await api.post("/login", { email, password }, config);
 
+    // Store token in localStorage
+    if (data.token) {
+      localStorage.setItem("token", data.token);
+    }
+
     dispatch({
       type: LOGIN_SUCCESS,
       payload: data.user,
@@ -76,6 +81,11 @@ export const registerUser = (userData) => async (dispatch) => {
     };
 
     const { data } = await api.post("/register", userData, config);
+
+    // Store token in localStorage
+    if (data.token) {
+      localStorage.setItem("token", data.token);
+    }
 
     dispatch({
       type: REGISTER_USER_SUCCESS,
@@ -120,6 +130,8 @@ export const loadUser = () => async (dispatch) => {
 export const logoutUser = () => async (dispatch) => {
   try {
     await api.get("/logout");
+    // Clear token from localStorage
+    localStorage.removeItem("token");
     dispatch({ type: LOGOUT_SUCCESS });
   } catch (error) {
     dispatch({
