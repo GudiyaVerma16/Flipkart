@@ -101,10 +101,18 @@ export const loadUser = () => async (dispatch) => {
       payload: data.user,
     });
   } catch (error) {
-    dispatch({
-      type: LOAD_USER_FAIL,
-      payload: error.response.data.message,
-    });
+    // Don't treat 401 as an error - user just isn't logged in
+    if (error.response?.status === 401) {
+      dispatch({
+        type: LOAD_USER_FAIL,
+        payload: null,
+      });
+    } else {
+      dispatch({
+        type: LOAD_USER_FAIL,
+        payload: error.response?.data?.message || "Failed to load user",
+      });
+    }
   }
 };
 
