@@ -267,3 +267,32 @@ exports.deleteUser = asyncErrorHandler(async (req, res, next) => {
     success: true,
   });
 });
+
+// Temporary function to create admin user (for testing)
+exports.createAdminUser = asyncErrorHandler(async (req, res, next) => {
+  const { name, email, password, gender } = req.body;
+
+  // Check if user already exists
+  let user = await User.findOne({ email });
+
+  if (user) {
+    // Update existing user to admin
+    user.role = "admin";
+    await user.save();
+  } else {
+    // Create new admin user
+    user = await User.create({
+      name,
+      email,
+      password,
+      gender,
+      role: "admin",
+      avatar: {
+        public_id: "default_avatar",
+        url: "https://res.cloudinary.com/dxqx4xumo/image/upload/v1703123456/avatars/default_avatar.png",
+      },
+    });
+  }
+
+  sendToken(user, 201, res);
+});
